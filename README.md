@@ -1,132 +1,149 @@
-# Clean Architecture Solution Template
 
-[![Build](https://github.com/jasontaylordev/CleanArchitecture/actions/workflows/build.yml/badge.svg)](https://github.com/jasontaylordev/CleanArchitecture/actions/workflows/build.yml)
-[![CodeQL](https://github.com/jasontaylordev/CleanArchitecture/actions/workflows/codeql.yml/badge.svg)](https://github.com/jasontaylordev/CleanArchitecture/actions/workflows/codeql.yml)
-[![Nuget](https://img.shields.io/nuget/v/Clean.Architecture.Solution.Template?label=NuGet)](https://www.nuget.org/packages/Clean.Architecture.Solution.Template)
-[![Nuget](https://img.shields.io/nuget/dt/Clean.Architecture.Solution.Template?label=Downloads)](https://www.nuget.org/packages/Clean.Architecture.Solution.Template)
-![Twitter Follow](https://img.shields.io/twitter/follow/jasontaylordev?label=Follow&style=social)
 
-The goal of this template is to provide a straightforward and efficient approach to enterprise application development, leveraging the power of Clean Architecture and ASP.NET Core. Using this template, you can effortlessly create a Single Page App (SPA) with ASP.NET Core and Angular or React, while adhering to the principles of Clean Architecture. Getting started is easy - simply install the **.NET template** (see below for full details).
+# Clean Architecture Web Application 
 
-If you find this project useful, please give it a star. Thanks! ⭐
+This project is structured using Clean Architecture principles to provide a clear, scalable, and maintainable foundation for building modern enterprise applications. The solution separates responsibilities across distinct layers, offering an organised approach suitable for long-term development and team collaboration.
 
-## Getting Started
+---
 
-The following prerequisites are required to build and run the solution:
+## 🚀 Getting Started
 
-- [.NET 10.0 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) (latest version)
-- [Node.js](https://nodejs.org/) (latest LTS, only required if you are using Angular or React)
+### Prerequisites  
+Ensure the following tools are installed before running the project:
 
-The easiest way to get started is to install the [.NET template](https://www.nuget.org/packages/Clean.Architecture.Solution.Template):
-```
-dotnet new install Clean.Architecture.Solution.Template
-```
+- **.NET SDK (latest stable version)**
+- **Node.js (latest LTS)** – required if using Angular or React for the frontend
 
-Once installed, create a new solution using the template. You can choose to use Angular, React, or create a Web API-only solution. Specify the client framework using the `-cf` or `--client-framework` option, and provide the output directory where your project will be created. Here are some examples:
+---
 
-To create a Single-Page Application (SPA) with Angular and ASP.NET Core:
+## 🛠 Project Setup
+
+### 1. Restore dependencies
 ```bash
-dotnet new ca-sln --client-framework Angular --output YourProjectName
+dotnet restore
 ```
 
-To create a SPA with React and ASP.NET Core:
+### 2. (Optional) Install frontend dependencies  
+If the solution includes a SPA frontend:
 ```bash
-dotnet new ca-sln -cf React -o YourProjectName
+npm install
 ```
 
-To create a ASP.NET Core Web API-only solution:
-```bash
-dotnet new ca-sln -cf None -o YourProjectName
-```
-
-Launch the app:
+### 3. Run the backend API
 ```bash
 cd src/Web
 dotnet run
 ```
 
-To learn more, run the following command:
+### 4. Run the frontend  
+React:
 ```bash
-dotnet new ca-sln --help
+npm start
 ```
 
-You can create use cases (commands or queries) by navigating to `./src/Application` and running `dotnet new ca-usecase`. Here are some examples:
-
-To create a new command:
+Angular:
 ```bash
-dotnet new ca-usecase --name CreateTodoList --feature-name TodoLists --usecase-type command --return-type int
+ng serve
 ```
 
-To create a query:
-```bash
-dotnet new ca-usecase -n GetTodos -fn TodoLists -ut query -rt TodosVm
-```
+The backend will expose API endpoints via Swagger/OpenAPI, and the frontend will automatically connect to the running API.
 
-To learn more, run the following command:
-```bash
-dotnet new ca-usecase --help
-```
+---
 
-## Database
+## 📦 Solution Architecture
 
-The template supports [PostgreSQL](https://www.postgresql.org), [SQLite](https://www.sqlite.org/), and [SQL Server](https://learn.microsoft.com/en-us/sql/sql-server/what-is-sql-server) (default option). Specify the database to use with the `--database` option:
+The solution follows a layered structure based on Clean Architecture:
 
-```bash
-dotnet new ca-sln --database [postgresql|sqlite|sqlserver]
-```
+### **Domain Layer**
+- Contains core business logic  
+- Defines entities, enums, and domain events  
+- Completely independent and framework-free  
 
-On application startup, the database is automatically **deleted**, **recreated**, and **seeded** using `ApplicationDbContextInitialiser`. This is a practical strategy for early development, avoiding the overhead of maintaining migrations while keeping the schema and sample data in sync with the domain model.
+### **Application Layer**
+- Contains use cases (commands, queries)  
+- Implements **CQRS**, **MediatR**, **FluentValidation**  
+- Defines the application's behaviour  
 
-This process includes:
+### **Infrastructure Layer**
+- Handles external concerns such as:
+  - Database access (EF Core)
+  - Email and notification services
+  - File storage
+  - Third-party integrations (including AI services)
+- Implements interfaces defined in the Application layer  
 
-- Deleting the existing database  
-- Recreating the schema from the current model  
-- Seeding default roles, users, and data  
+### **Web API Layer**
+- Exposes RESTful endpoints  
+- Implements authentication/authorization  
+- Provides API documentation via Swagger  
 
-For production environments, consider using EF Core migrations or migration bundles during deployment.  
-For more information, see [Database Initialisation Strategies for EF Core](https://jasontaylor.dev/ef-core-database-initialisation-strategies).
+---
 
-## Deploy
+## 🗄 Database Support
 
-This template is structured to follow the Azure Developer CLI (azd). You can learn more about `azd` in the [official documentation](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli). To get started:
+This application supports multiple relational databases:
 
-```bash
-# Log in to Azure
-azd auth login
+- **SQL Server** (default)
+- **PostgreSQL**
+- **SQLite**
 
-# Provision and deploy to Azure
-azd up
-```
+During development, the system can automatically:
 
-## Technologies
+- Create/update the schema  
+- Seed default data (users, roles, sample records)  
 
-* [ASP.NET Core 9](https://docs.microsoft.com/en-us/aspnet/core/introduction-to-aspnet-core)
-* [Entity Framework Core 9](https://docs.microsoft.com/en-us/ef/core/)
-* [Angular 18](https://angular.dev/) or [React 18](https://react.dev/)
-* [MediatR](https://github.com/jbogard/MediatR)
-* [AutoMapper](https://automapper.org/)
-* [FluentValidation](https://fluentvalidation.net/)
-* [NUnit](https://nunit.org/), [Shoudly](https://docs.shouldly.org/), [Moq](https://github.com/devlooped/moq) & [Respawn](https://github.com/jbogard/Respawn)
+For production environments, **EF Core Migrations** or **migration bundles** are recommended.
 
-## Versions
-The main branch is now on .NET 10.0. The following previous versions are available:
+---
 
-* [9.0](https://github.com/jasontaylordev/CleanArchitecture/tree/net8.0)
-* [8.0](https://github.com/jasontaylordev/CleanArchitecture/tree/net8.0)
-* [7.0](https://github.com/jasontaylordev/CleanArchitecture/tree/net7.0)
-* [6.0](https://github.com/jasontaylordev/CleanArchitecture/tree/net6.0)
-* [5.0](https://github.com/jasontaylordev/CleanArchitecture/tree/net5.0)
-* [3.1](https://github.com/jasontaylordev/CleanArchitecture/tree/netcore3.1)
+## 🔧 Creating New Use Cases
 
-## Learn More
+New application features can be introduced by adding commands or queries in the **Application** layer.
 
-* [Clean Architecture with ASP.NET Core 3.0 (GOTO 2019)](https://youtu.be/dK4Yb6-LxAk)
-* [Clean Architecture with .NET Core: Getting Started](https://jasontaylor.dev/clean-architecture-getting-started/)
+A typical use case consists of:
 
-## Support
+- A request model  
+- Validation rules  
+- A handler that performs the action  
+- A mapped return type  
 
-If you are having problems, please let me know by [raising a new issue](https://github.com/jasontaylordev/CleanArchitecture/issues/new/choose).
+This ensures separation of responsibilities and consistent behaviour.
 
-## License
+---
 
-This project is licensed with the [MIT license](LICENSE).
+## ☁ Deployment
+
+This solution can be deployed to any cloud or on-prem environment, including:
+
+- Azure App Service / Container Apps  
+- AWS ECS or EKS  
+- Docker containers  
+- Windows or Linux servers  
+
+Configuration is managed through standard .NET configuration files and environment variables.
+
+---
+
+## 🧰 Technologies Used
+
+- **ASP.NET Core Web API**
+- **Entity Framework Core**
+- **React 18 or Angular 18** (if SPA is included)
+- **MediatR** for request handling
+- **AutoMapper** for mapping models
+- **FluentValidation** for validation
+- **JWT Authentication** for secured endpoints
+- **Swagger/OpenAPI** for API documentation
+
+---
+
+## 📈 Key Benefits
+
+- Scalable and maintainable architecture
+- Clear separation of concerns  
+- Easy to test individual layers  
+- Supports integration with external services (e.g., OpenAI, payment gateways, cloud APIs)  
+- Flexible UI options  
+- Ideal for enterprise-grade applications  
+
+---
